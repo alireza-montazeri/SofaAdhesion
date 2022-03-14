@@ -1,0 +1,68 @@
+<!-- Based on examples/Demos/TriangleSurfaceCutting.scn -->
+<Node name="root" dt="0.05" showBoundingTree="0" gravity="0 0 0">
+    <RequiredPlugin name="SofaGeneralDeformable"/>
+    <RequiredPlugin name="SofaImplicitOdeSolver"/>
+    <RequiredPlugin name="SofaLoader"/>
+    <RequiredPlugin name="SofaMeshCollision"/>
+    <RequiredPlugin name="SofaMiscCollision"/>
+    <RequiredPlugin name="SofaMiscFem"/>
+    <RequiredPlugin name="SofaOpenglVisual"/>
+    <RequiredPlugin name="SofaConstraint"/>
+    <RequiredPlugin name="SofaBoundaryCondition"/>
+    <RequiredPlugin name="SofaHaptics"/>
+    <RequiredPlugin name="SofaRigid"/>
+    <RequiredPlugin name="SofaUserInteraction"/>
+    <RequiredPlugin name="SofaEngine"/>
+    <RequiredPlugin name="SofaGeneralSimpleFem"/>
+    <RequiredPlugin name="SofaDeformable"/>
+    <RequiredPlugin name="SofaGeneralObjectInteraction"/>
+
+    <RequiredPlugin name="SofaTearing" />
+    <RequiredPlugin name="SofaAdhesion" />
+
+    <VisualStyle displayFlags="showVisual " />
+    <!--showForceFields showBehaviorModels -->
+
+    <DefaultPipeline name="pipeline" depth="6" verbose="0"/>
+    <BruteForceBroadPhase/>
+    <BVHNarrowPhase/>
+    <DefaultContactManager name="response" response="PenalityContactForceField" />
+    <LocalMinDistance name="proximity" alarmDistance="0.05" contactDistance="0.01" angleCone="0.0" />
+    <DefaultAnimationLoop/>
+    <DefaultVisualManagerLoop/>
+    <LCPConstraintSolver tolerance="0.001" maxIt="1000"/>
+
+    <Node name="Lens">
+        <EulerImplicitSolver name="cg_odesolver" printLog="false" rayleighStiffness="0.1" rayleighMass="0.1" />
+        <CGLinearSolver iterations="3" name="linear solver" tolerance="1.0e-9" threshold="1.0e-9" />
+
+        <MeshGmshLoader name="meshLoader" filename="mesh/lensHD1.msh" scale="1.5" createSubelements="true"/>
+        <include href="TriangleSetTopology.xml" src="@meshLoader" />
+        <MechanicalObject name="MechanicalModel" template="Vec3d" dy="0.83"/>
+        <DiagonalMass massDensity="0.5" />
+
+        <TriangularFEMForceField name="FEM" youngModulus="50000" poissonRatio="0" method="large" computePrincipalStress="true"/>
+        <!-- <EllipsoidForceField stiffness="1000" damping="5000" center="0 0.83 0" vradius="0.65 0.22 0.65" /> -->
+        <EllipsoidForceField stiffness="-0.0001" damping="20" center="0 0.83 0" vradius="0.65 0.21 0.65" />
+
+        <!-- <BoxROI template="Vec3d" name="box_roi1" box="-1 0.975 -5 1 1.008 1" drawBoxes="true"/>
+        <FixedConstraint template="Vec3d" name="fixedConstraint1" indices="@box_roi1.indices"/> -->
+
+        <TriangleCollisionModel name="cmTriangles" contactStiffness="10000" group="1"/>
+        <LineCollisionModel name="cmLines" contactStiffness="10000" group="1" />
+        <PointCollisionModel name="cmPoints" contactStiffness="10000" group="1" />
+
+        <Node name="VisualNode">
+            <OglModel name="VisualModel" scale="1.5" color="0.6 0.6 0.6 0.9"/>
+            <IdentityMapping input="@../MechanicalModel" output="@VisualModel" />
+        </Node>
+
+        <BruteForceBroadPhase/>
+        <BVHNarrowPhase/>
+
+        <!-- <TearPlugin name="Tear" tearThreshold="1700.0"/> -->
+        <AdhesionPlugin stiffness="1000" adhesion_threshold="30" recompute_indices="false" drawSpring="true" />
+    </Node>
+</Node>
+
+
