@@ -56,6 +56,7 @@ namespace sofa::component::forcefield
         , d_drawSpring(initData(&d_drawSpring, false, "drawSpring", "draw Spring"))
         , d_springColor(initData(&d_springColor, sofa::type::RGBAColor::green(), "springColor", "spring color. (default=[0.0,1.0,0.0,1.0])"))
         , l_restMState(initLink("external_rest_shape", "rest_shape can be defined by the position of an external Mechanical State"))
+        , d_coef(initData(&d_coef, "axis_coef", "Axis spring coef"))
     {
     }
 
@@ -305,11 +306,12 @@ namespace sofa::component::forcefield
             const sofa::Index ext_index = m_ext_indices[i];
 
             Deriv dx = p1[index] - p0[ext_index];
-            Deriv force = dx * k[i];
-            if (sqrt(force[0] * force[0] + force[1] * force[1] + force[2] * force[2]) > threshold[i])
+            if (sqrt(dx[0] * dx[0] + dx[1] * dx[1] + dx[2] * dx[2]) > threshold[i])
             {
                 k[i] = 0;
             }
+            dx[0] *= d_coef.getValue()[0]; dx[1] *= d_coef.getValue()[1];  dx[2] *= d_coef.getValue()[2];
+            Deriv force = dx * k[i];
             f1[index] -= force;
         }
     }
