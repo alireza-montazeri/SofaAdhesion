@@ -29,6 +29,7 @@
 #include <sofa/core/behavior/ForceField.h>
 #include <sofa/core/objectmodel/Data.h>
 #include <sofa/type/vector.h>
+#include <sofa/type/Quat.h>
 #include <sofa/linearalgebra/EigenSparseMatrix.h>
 
 

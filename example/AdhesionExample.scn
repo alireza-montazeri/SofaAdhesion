@@ -61,7 +61,7 @@
         <BVHNarrowPhase/>
 
         <!-- <TearPlugin name="Tear" tearThreshold="1700.0"/> -->
-        <AdhesionPlugin stiffness="1000" adhesion_threshold="30" recompute_indices="false" drawSpring="true" />
+        <AdhesionPlugin stiffness="800" adhesion_threshold="0.03" axis_coef="1.0 1.0 1.0" recompute_indices="false" drawSpring="true" />
     </Node>
 </Node>
 
